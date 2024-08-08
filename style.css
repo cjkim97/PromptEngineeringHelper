@@ -1,0 +1,59 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css");
+
+
+/* 프롬프트 버튼 스타일 변경 */
+[data-testid='baseButton-secondary'] {
+    border : hidden;
+    background-color : transparent;
+}
+[data-testid='baseButton-secondary'] > div > p {
+    font-size : 13px;
+    font-family: "Pretendard-Regular";
+}
+[data-testid=stChatMessageContent] > [data-testid='stVerticalBlockBorderWrapper'] > div > div {
+    gap : 0;
+}
+
+/* 폰트 변경 */
+span, div {
+    font-family: 'Pretendard Variable';
+    font-weight: 400;
+}
+
+p {
+    font-family: 'Pretendard Variable';
+    font-weight: 600;
+}
+
+h1 {
+    font-family: 'Pretendard Variable';
+    font-weight: 700;
+}
+
+h3 {
+    font-family: 'Pretendard Variable';
+    font-weight: 600;
+}
+
+body {
+    font-family: 'Pretendard Variable';
+    font-weight: 300;
+}
+
+input {
+    font-family: 'Pretendard Variable';
+    font-weight: 300;
+}
+
+/* Add, Generate 버튼 스타일 변경 */
+[class='row-widget stButton'] {
+    display : flex;
+    justify-content: flex-end;
+}
+[data-testid='baseButton-primary'] {
+    flex-grow : 1;
+}
+[data-testid='stExpanderIconCheck'] {
+    font-family: "Material Symbols Rounded";
+}
+
