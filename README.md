@@ -6,10 +6,10 @@
 1. 프롬프트를 입력합니다. Systemprompt 와 human/ai prompt 를 세팅할 수 있습니다.
   ![프롬프트입력](https://github.com/user-attachments/assets/1b85362d-52c7-4af5-afc6-aa6311fe22b8)
 
-2. 생성할 모델을 설정합니다.
+2. 생성할 모델을 설정합니다. 각 모델을 추가할 때마다 추가한 모델의 temperature와 top-p 값을 조절할 수 있습니다!
   ![모델세팅_fast](https://github.com/user-attachments/assets/7f5b1003-0af8-49f7-8955-be07ddf82dc1)
 
-3. 생성버튼을 누릅니다.
+3. API key, 모델 호출 횟수를 입력한 뒤 생성버튼을 누릅니다. (각 모델이 생성 시도 수 만큼 호출되기 때문에 api 비용 조심하세요 :) )
   ![생성](https://github.com/user-attachments/assets/6db8ca61-f0db-4d9d-851e-91d6631c372e)
 
 ## 이럴때 사용해보세요! 
