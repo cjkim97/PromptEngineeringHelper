@@ -180,9 +180,9 @@ if add_button :
 # 2. 추가한 모델 config 설정
 for ind, config in enumerate(st.session_state['model_configs']) : 
     model_name = config['model_name']
-    config_expander = config_setting.expander(label=model_name, expanded=True)
+    config_expander = config_setting.expander(label=model_name, expanded=False)
     # temperature 세팅
-    config_expander.slider(label='temperature', 
+    temperature = config_expander.slider(label='temperature', 
                            min_value=0.0, 
                            max_value=2.0, 
                            step=0.01, 
