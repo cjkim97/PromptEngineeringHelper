@@ -99,7 +99,8 @@ def change_top_p(model_index):
     st.session_state['model_configs'][model_index]["top_p"] = st.session_state[f'top_p{model_index}']
 
 ####################################### 페이지 영역 #######################################
-st.title('Prompt Engineering Helper')
+st.title('펠퍼v1.0.0(P.E.Helper)')
+st.page_link("https://github.com/cjkim97/PromptEngineeringHelper", label="사용설명서", icon="📝")
 
 # 페이지 레이아웃 잡기
 prompt_setting, config_setting = st.columns([2, 1])
@@ -284,11 +285,12 @@ if st.session_state['generation_results'] :
         with tap : 
             tap.write(f'''<p>{model_name}-temp{temperature}-topP{top_p}</p>''', unsafe_allow_html=True)
             for ind, result_generate in enumerate(result_group[conf_ind]) : 
-                tap.text_area(label = 'result', 
-                              value=result_generate,
-                              label_visibility='collapsed',
-                              key = f'{model_name}-{temperature}-{top_p}_{ind}'
-                              )
+                tap.code(body=result_generate)
+                # tap.text_area(label = 'result', 
+                #               value=result_generate,
+                #               label_visibility='collapsed',
+                #               key = f'{model_name}-{temperature}-{top_p}_{ind}'
+                #               )
 # 동일 모델에 대해서 재정렬하기
 # 결과 화면
 # 아무것도 없으면 아이콘
