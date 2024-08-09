@@ -110,7 +110,7 @@ st.write('''<div class="main_title">
          </div>''', unsafe_allow_html=True)
 st.write('''<div class="page_links">
             <div class="link"> <a href="https://github.com/cjkim97/PromptEngineeringHelper"> 📝 사용설명서 </a> </div>
-            <div class="link"> <a href="https://blog.naver.com/nuang0530"> 🏠 제작자의 블로그 </a> </div>
+            <div class="link"> <a href="https://blog.naver.com/nuang0530/223542333577"> 🏠 제작자의 블로그 </a> </div>
          </div>''', 
          unsafe_allow_html=True)
 # link1, link2, _ = st.columns([1, 1, 3])
