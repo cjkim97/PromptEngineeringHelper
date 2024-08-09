@@ -1,9 +1,10 @@
 import streamlit as st
-import time
-from generate import generate
+from services.generate import generate
 import asyncio
+import logging
 
-############### streamlit basic setting  ####################
+logger = logging.getLogger()
+####################################### streamlit basic setting  #######################################
 st.set_page_config(layout='wide')
 # session_state 관리
 if 'prompts' not in st.session_state:
@@ -15,26 +16,61 @@ if 'model_configs' not in st.session_state:
 if 'generation_results' not in st.session_state:
     st.session_state['generation_results'] = []
 
-############### 페이지 디자인 영역 ####################
+if 'add' not in st.session_state:
+    st.session_state.add = False
+
+if 'modify' not in st.session_state:
+    st.session_state.modify = False
+
+if 'api_keys' not in st.session_state:
+    st.session_state.api_keys = {
+        "OPENAI_API_KEY" : "",
+        "ANTHROPIC_API_KEY" : "",
+        "GEMINI_API_KEY" : "",
+        
+    }
+
+
+
+####################################### 페이지 디자인 영역 #######################################
 with open( "style.css", encoding='utf-8-sig' ) as css:
     st.markdown(f"""<style>{css.read()}</style>""", unsafe_allow_html=True)
 
-############### 페이지 상호작용 함수 영역 ##################
+####################################### 페이지 상호작용 함수 영역 #######################################
 # 프롬프트 삭제
 def delete_chat(chat_index):
     st.session_state['prompts'] = st.session_state['prompts'][:chat_index] \
         + st.session_state['prompts'][chat_index+1 : ]
 
+# 프롬프트 추가
+def add_chat() : 
+    if st.session_state.new_prompt : 
+            st.session_state.add = True
+
 @st.dialog("프롬프트 수정")
 def modify_chat(chat_index) : 
     now_prompt = st.session_state['prompts'][chat_index][-1]
     now_cate = st.session_state['prompts'][chat_index][0]
-    
+    categories = ["human", "ai"]
+    now_cate_index = categories.index(now_cate)
+
     # 프롬프트 수정
-    modified_prompt = st.text_input(label='프롬프트수정', value=now_prompt, label_visibility='collapsed', )
-    finish_modify = st.button(label ="Modify", key=f'modify-dialog')
-    if finish_modify : 
-        st.session_state['prompts'][chat_index] = (now_cate, modified_prompt)
+    cate_area, _ = st.columns([1, 3])
+    modified_cate = cate_area.selectbox(label = "입력카테고리", 
+                                 options = ["human", "ai"], 
+                                 label_visibility = 'collapsed',
+                                 key= 'modified_category',
+                                 index = now_cate_index)
+    modified_prompt = st.text_area(label='프롬프트수정', 
+                                    value=now_prompt, 
+                                    label_visibility='collapsed',
+                                    key='modified_prompt'
+                                    )
+    finish_modify = st.button(label ="Modify", 
+                              key=f'modify-dialog')
+    if finish_modify or st.session_state.modify : 
+        st.session_state['prompts'][chat_index] = (modified_cate, modified_prompt)
+        st.session_state.modify = False
         st.rerun()
 
 # 모델 추가
@@ -58,19 +94,17 @@ def delete_model(model_index) :
 def change_temperature(model_index):
     st.session_state['model_configs'][model_index]["temperature"] = st.session_state[f'temperature{model_index}']
 
-# temperature 변경
+# top_p 변경
 def change_top_p(model_index):
     st.session_state['model_configs'][model_index]["top_p"] = st.session_state[f'top_p{model_index}']
 
-############### 페이지 영역 ####################
+####################################### 페이지 영역 #######################################
 st.title('Prompt Engineering Helper')
 
 # 페이지 레이아웃 잡기
 prompt_setting, config_setting = st.columns([2, 1])
 
-#### PROMPT SETTING AREA #####
-# prompt_setting.subheader('프롬프트 세팅')
-# 프롬프트 세팅 -> 사이드 바로 빼는 것도 고려?
+################# 1. PROMPT SETTING AREA #################
 # 1. System Prompt
 system_prompt = prompt_setting.text_area(label = '시스템프롬프트', placeholder="System Prompt")
 
@@ -87,29 +121,32 @@ for ind, prompt in enumerate(st.session_state['prompts']) :
         delete = prompt_container.button("❌ Delete", key=f'del{ind}', on_click=delete_chat, args=(ind, ))
         modify =prompt_container.button("✏️ Modify", key=f'mod{ind}', on_click=modify_chat, args=(ind, ))
 
-## 프롬프트 종류에 따른 입력
-# prompt_category, _ = prompt_setting.columns([1, 1.5], )
-# category = prompt_category.selectbox(label = "입력카테고리", 
-#                                      options = ["human", "ai"], 
-#                                      label_visibility = 'collapsed')
-
+# 3. 카테고리 별 프롬프트 추가하기
 prompt_category, add_prompt, add_button = prompt_setting.columns([2, 5, 1])
 category = prompt_category.selectbox(label = "입력카테고리", 
                                      options = ["human", "ai"], 
-                                     label_visibility = 'collapsed')
-add_prompt = add_prompt.text_input(label = '추가프롬프트', 
+                                     label_visibility = 'collapsed',
+                                     key= 'prompt_category')
+new_prompt = add_prompt.text_input(label = '추가프롬프트', 
                                 placeholder="Prompt",
                                 label_visibility = 'collapsed',
+                                key='new_prompt',
+                                value=""
                                 )
-add_button = add_button.button("Add", type="primary")
-if add_button and add_prompt : 
-    st.session_state['prompts'].append((category, add_prompt))
+add_button = add_button.button(label="Add", 
+                               type="primary", 
+                               key='add_button',
+                               on_click=add_chat)
+
+if st.session_state.add : 
+    st.session_state['prompts'].append((category, new_prompt))
+    st.session_state.add = False # 한번만 add
     st.rerun()
 
 
-#### CONFIG SETTING AREA #####
+################# 2. CONFIG SETTING AREA #################
 # config_setting.subheader('Config 세팅')
-# 모델 추가 selectbox
+# 1. 모델 추가 selectbox
 models = ['선택', 'gpt-4o', 'gpt-4o-mini','gpt-3.5-turbo', 
           'claude-3-5-sonnet-20240620', 'claude-3-opus-20240229',
           'gemini-1.5-flash', 'gemini-1.5-pro']
@@ -119,7 +156,7 @@ add_model = config_setting.selectbox(label='모델추가',
                                      on_change=add_model_config
                                      )
 
-# config expanders
+# 2. 추가한 모델 config 설정
 for ind, config in enumerate(st.session_state['model_configs']) : 
     model_name = config['model_name']
     config_expander = config_setting.expander(label=model_name)
@@ -145,7 +182,7 @@ for ind, config in enumerate(st.session_state['model_configs']) :
                            )
     config_expander.button('Delete', key=f'model_delete{ind}', on_click=delete_model, args=(ind,))
 
-# general setting
+# 2. API_KEY, Generate time 설정
 choiced_model = [x['model_name'] for x in st.session_state['model_configs']]
 openai_check = True if len([name for name in choiced_model if 'gpt' in name]) else False
 claude_check = True if len([name for name in choiced_model if 'claude' in name]) else False
@@ -157,16 +194,25 @@ gemini_api_key = "pehelper"
 key_input = config_setting.container()
 with key_input :
     if openai_check : 
-        openai_api_key = key_input.text_input(label="OPENAI_API_KEY", type="password")
+        openai_api_key = key_input.text_input(label="OPENAI_API_KEY", 
+                                              type="password",
+                                              value=st.session_state['api_keys']['OPENAI_API_KEY'])
+        st.session_state['api_keys']['OPENAI_API_KEY'] = openai_api_key
     if claude_check : 
-        claude_api_key = key_input.text_input(label="ANTHROPIC_API_KEY", type="password")
+        claude_api_key = key_input.text_input(label="ANTHROPIC_API_KEY", 
+                                              type="password",
+                                              value=st.session_state['api_keys']['ANTHROPIC_API_KEY'])
+        st.session_state['api_keys']['ANTHROPIC_API_KEY'] = claude_api_key
     if gemini_check : 
-        gemini_api_key = key_input.text_input(label="GEMINI_API_KEY", type="password")
+        gemini_api_key = key_input.text_input(label="GEMINI_API_KEY", 
+                                              type="password",
+                                              value=st.session_state['api_keys']['GEMINI_API_KEY'])
+        st.session_state['api_keys']['GEMINI_API_KEY'] = gemini_api_key
     generate_times = key_input.number_input(label="생성 시도 수", min_value=1, max_value=10, value=1, step=1, key="generate_times")
     gen_button = key_input.button("GENERATE", type='primary')
-    # key_forms.form_submit_button(label="RUN")
 
 Error = ""
+results = ""
 # ERROR CHECK
 if gen_button : 
     # 대화 내용이 있는지
@@ -204,16 +250,46 @@ if gen_button :
             with st.spinner('텍스트 생성 중...') : 
                 try : 
                     # 비동기 루프 실행
-                    # async def generate(configs = [], generate_times=1):
                     results = asyncio.run(generate(st.session_state['model_configs'], 
-                                                   generate_times=1, 
+                                                   generate_times=generate_times, 
                                                    chatprompt=st.session_state['prompts']))
-                    # 결과페이지로 이동
-                    st.switch_page("pages/results.py")
+                   
+                    st.session_state['generation_results'] = results
                 except Exception as e : 
                     st.error(e)
-# print(st.session_state['prompts'])
 
+################# 3. RESULT AREA #################
+# 결과후처리
+if st.session_state['generation_results'] : 
+    unique_configs = []
+    result_group = []
+    for result in st.session_state['generation_results'] : 
+        conf, generated_text = result
+        if conf in unique_configs : 
+            config_index = unique_configs.index(conf)
+            result_group[config_index].append(generated_text)
+        else : 
+            unique_configs.append(conf)
+            result_group.append([generated_text])
+    #### 화면 표시 ####
+    st.subheader("결과")
+    result_container = st.columns(len(unique_configs), 
+                                  vertical_alignment="top")
+    for conf_ind, conf in enumerate(unique_configs) : 
+        display_area = result_container[conf_ind]
+        model_name = conf['model_name']
+        temperature = conf['temperature']
+        top_p = conf['top_p']
+        tap = display_area.container(border=True)
+        with tap : 
+            tap.write(f'''<p>{model_name}-temp{temperature}-topP{top_p}</p>''', unsafe_allow_html=True)
+            for ind, result_generate in enumerate(result_group[conf_ind]) : 
+                tap.text_area(label = 'result', 
+                              value=result_generate,
+                              label_visibility='collapsed',
+                              key = f'{model_name}-{temperature}-{top_p}_{ind}'
+                              )
+# 동일 모델에 대해서 재정렬하기
 # 결과 화면
 # 아무것도 없으면 아이콘
 

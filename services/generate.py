@@ -15,8 +15,6 @@ import asyncio
 
 # OpenAI 출력
 async def get_result(model_config, chatprompt = []) : 
-    print(">>>>>>> OPENAI MODEL INFERNCING 을 시작합니다")
-    print(">>>>>>> OPENAI MODEL INFERNCING 을 시작sdsdsd합니다")
     
     # 모델 세팅
     model_name = model_config['model_name']
