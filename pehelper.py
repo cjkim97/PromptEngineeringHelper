@@ -5,7 +5,12 @@ import logging
 
 logger = logging.getLogger()
 ####################################### streamlit basic setting  #######################################
-st.set_page_config(layout='wide')
+
+st.set_page_config(
+    page_title="PEHelper",
+    page_icon="📝",
+    layout='wide'
+    )
 # session_state 관리
 if 'prompts' not in st.session_state:
     st.session_state['prompts'] = []
