@@ -111,8 +111,9 @@ st.page_link("https://github.com/cjkim97/PromptEngineeringHelper", label="사용
 prompt_setting, config_setting = st.columns([2, 1])
 
 ################# 1. PROMPT SETTING AREA #################
+prompt_setting.subheader("프롬프트 입력")
 # 1. System Prompt
-system_prompt = prompt_setting.text_area(label = '시스템프롬프트', placeholder="System Prompt")
+system_prompt = prompt_setting.text_area(label = '시스템프롬프트', placeholder="System Prompt", label_visibility="collapsed")
 
 
 # 2. 추가한 프롬프트 보여주기
@@ -151,21 +152,25 @@ if st.session_state.add :
 
 
 ################# 2. CONFIG SETTING AREA #################
-# config_setting.subheader('Config 세팅')
+config_setting.subheader('모델 세팅')
 # 1. 모델 추가 selectbox
 models = ['선택', 'gpt-4o', 'gpt-4o-mini','gpt-3.5-turbo', 
           'claude-3-5-sonnet-20240620', 'claude-3-opus-20240229',
           'gemini-1.5-flash', 'gemini-1.5-pro']
-add_model = config_setting.selectbox(label='모델추가', 
-                                     options=models,
-                                     key='add_model',
-                                     on_change=add_model_config
-                                     )
+select, button = config_setting.columns([2, 1])
+add_model = select.selectbox(label='모델추가', 
+                             options=models,
+                             key='add_model',
+                             label_visibility="collapsed"
+)
+add_button = button.button("Add", type="primary")
+if add_button : 
+    add_model_config()
 
 # 2. 추가한 모델 config 설정
 for ind, config in enumerate(st.session_state['model_configs']) : 
     model_name = config['model_name']
-    config_expander = config_setting.expander(label=model_name)
+    config_expander = config_setting.expander(label=model_name, expanded=True)
     # temperature 세팅
     config_expander.slider(label='temperature', 
                            min_value=0.0, 
@@ -290,7 +295,7 @@ if st.session_state['generation_results'] :
         with tap : 
             tap.write(f'''<p>{model_name}-temp{temperature}-topP{top_p}</p>''', unsafe_allow_html=True)
             for ind, result_generate in enumerate(result_group[conf_ind]) : 
-                tap.code(body=result_generate)
+                tap.code(body=result_generate, language='plaintext')
                 # tap.text_area(label = 'result', 
                 #               value=result_generate,
                 #               label_visibility='collapsed',

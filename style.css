@@ -57,3 +57,10 @@ input {
     font-family: "Material Symbols Rounded";
 }
 
+/* code wrap 처리 */
+/* [class='language-plaintext'] {
+    display : flex;
+} */
+[class='language-plaintext'] {
+    text-wrap : wrap !important;
+}
