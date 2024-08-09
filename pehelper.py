@@ -104,8 +104,18 @@ def change_top_p(model_index):
     st.session_state['model_configs'][model_index]["top_p"] = st.session_state[f'top_p{model_index}']
 
 ####################################### 페이지 영역 #######################################
-st.title('펠퍼v1.0.0(P.E.Helper)')
-st.page_link("https://github.com/cjkim97/PromptEngineeringHelper", label="사용설명서", icon="📝")
+st.write('''<div class="main_title">
+                <h1>펠퍼v1.0.0(P.E.Helper)</h1>
+                <!--<a href="http://www.naver.com">by UgwayK</a>-->
+         </div>''', unsafe_allow_html=True)
+st.write('''<div class="page_links">
+            <div class="link"> <a href="https://github.com/cjkim97/PromptEngineeringHelper"> 📝 사용설명서 </a> </div>
+            <div class="link"> <a href="https://blog.naver.com/nuang0530"> 🏠 제작자의 블로그 </a> </div>
+         </div>''', 
+         unsafe_allow_html=True)
+# link1, link2, _ = st.columns([1, 1, 3])
+# st.page_link("https://github.com/cjkim97/PromptEngineeringHelper", label="사용설명서", icon="📝")
+# link2.page_link("https://blog.naver.com/nuang0530", label="제작자의 블로그", icon="🏠")
 
 # 페이지 레이아웃 잡기
 prompt_setting, config_setting = st.columns([2, 1])

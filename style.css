@@ -64,3 +64,37 @@ input {
 [class='language-plaintext'] {
     text-wrap : wrap !important;
 }
+
+/* main_title 레이아웃 잡기 */
+[class="main_title"] {
+    display: flex;
+    align-items: flex-end;
+    gap : 0;
+}
+
+/* main_link 스타일 설정 */
+[class="page_links"] {
+    display: flex;
+    align-items: center;
+    gap : 1rem;
+}
+
+[class="page_links"] > [class="link"] > a{
+    font-family: "Pretendard Variable";
+    font-weight: 500;
+    color: rgb(0, 0, 0);
+    text-decoration : none;
+    padding-left : 0.5rem;
+    padding-right : 0.5rem;
+    margin-top: 0.125rem;
+    margin-bottom: 0.125rem;
+    line-height : 2;
+}
+[class="link"] {
+    display : flex;
+    align-items: center;
+}
+[class="link"] :hover {
+    background-color: rgb(247, 247, 247);
+    border-radius: 0.2rem;
+}
