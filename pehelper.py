@@ -165,7 +165,7 @@ if st.session_state.add :
 config_setting.subheader('모델 세팅')
 # 1. 모델 추가 selectbox
 models = ['선택', 'gpt-4o', 'gpt-4o-mini','gpt-3.5-turbo', 
-          'claude-3-5-sonnet-20240620', 'claude-3-opus-20240229',
+          'claude-3-5-sonnet-20240620', 'claude-3-opus-20240229', 'claude-3-haiku-20240307'
           'gemini-1.5-flash', 'gemini-1.5-pro']
 select, button = config_setting.columns([2, 1])
 add_model = select.selectbox(label='모델추가', 
