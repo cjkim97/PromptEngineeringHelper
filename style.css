@@ -57,13 +57,18 @@ input {
     font-family: "Material Symbols Rounded";
 }
 
-/* code wrap 처리 */
+/* wrap 처리 */
 /* [class='language-plaintext'] {
     display : flex;
 } */
 [class='language-plaintext'] {
     text-wrap : wrap !important;
 }
+
+[data-testid='stText'] > div {
+    text-wrap: wrap !important;
+}
+
 
 /* main_title 레이아웃 잡기 */
 [class="main_title"] {
