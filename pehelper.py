@@ -299,5 +299,4 @@ if st.session_state['generation_results'] :
         with tap : 
             tap.write(f'''<p>{model_name}-temp{temperature}-topP{top_p}</p>''', unsafe_allow_html=True)
             for ind, result_generate in enumerate(result_group[conf_ind]) : 
-                # tap.code(body=result_generate, language='plaintext')
-                tap.code(body=result_generate, language='markdown')
+                tap.code(body=result_generate, language='plaintext')
