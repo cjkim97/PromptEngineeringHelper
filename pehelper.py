@@ -1,9 +1,6 @@
 import streamlit as st
 from services.generate import generate
 import asyncio
-import logging
-
-logger = logging.getLogger()
 ####################################### streamlit basic setting  #######################################
 
 st.set_page_config(
@@ -17,9 +14,6 @@ if 'prompts' not in st.session_state:
 
 if 'model_configs' not in st.session_state:
     st.session_state['model_configs'] = []
-
-if 'system_prompt' not in st.session_state:
-    st.session_state['system_prompt'] = ''
 
 if 'generation_results' not in st.session_state:
     st.session_state['generation_results'] = []
@@ -45,6 +39,10 @@ with open( "style.css", encoding='utf-8-sig' ) as css:
     st.markdown(f"""<style>{css.read()}</style>""", unsafe_allow_html=True)
 
 ####################################### 페이지 상호작용 함수 영역 #######################################
+# 시스템 프롬프트 변경
+def modify_system_prompt() : 
+    st.session_state['system_prompt'] = st.session_state['sys_prom']
+
 # 프롬프트 삭제
 def delete_chat(chat_index):
     st.session_state['prompts'] = st.session_state['prompts'][:chat_index] \
@@ -59,20 +57,21 @@ def add_chat() :
 def modify_chat(chat_index) : 
     now_prompt = st.session_state['prompts'][chat_index][-1]
     now_cate = st.session_state['prompts'][chat_index][0]
-    categories = ["human", "ai"]
+    categories = ["system", "human", "ai"]
     now_cate_index = categories.index(now_cate)
 
     # 프롬프트 수정
-    cate_area, _ = st.columns([1, 3])
+    cate_area, _ = st.columns([1, 2])
     modified_cate = cate_area.selectbox(label = "입력카테고리", 
-                                 options = ["human", "ai"], 
+                                 options = ["system", "human", "ai"], 
                                  label_visibility = 'collapsed',
                                  key= 'modified_category',
                                  index = now_cate_index)
     modified_prompt = st.text_area(label='프롬프트수정', 
                                     value=now_prompt, 
                                     label_visibility='collapsed',
-                                    key='modified_prompt'
+                                    key='modified_prompt',
+                                    height=400
                                     )
     finish_modify = st.button(label ="Modify", 
                               key=f'modify-dialog')
@@ -108,7 +107,7 @@ def change_top_p(model_index):
 
 ####################################### 페이지 영역 #######################################
 st.write('''<div class="main_title">
-                <h1>펠퍼v1.0.0(P.E.Helper)</h1>
+                <h1>펠퍼(P.E.Helper)</h1>
                 <!--<a href="http://www.naver.com">by UgwayK</a>-->
          </div>''', unsafe_allow_html=True)
 st.write('''<div class="page_links">
@@ -116,47 +115,36 @@ st.write('''<div class="page_links">
             <div class="link"> <a href="https://blog.naver.com/nuang0530/223542333577"> 🏠 제작자의 블로그 </a> </div>
          </div>''', 
          unsafe_allow_html=True)
-# link1, link2, _ = st.columns([1, 1, 3])
-# st.page_link("https://github.com/cjkim97/PromptEngineeringHelper", label="사용설명서", icon="📝")
-# link2.page_link("https://blog.naver.com/nuang0530", label="제작자의 블로그", icon="🏠")
 
 # 페이지 레이아웃 잡기
 prompt_setting, config_setting = st.columns([2, 1])
 
 ################# 1. PROMPT SETTING AREA #################
 prompt_setting.subheader("프롬프트 입력")
-# 1. System Prompt
-system_prompt = prompt_setting.text_area(label = '시스템프롬프트', 
-                                         placeholder="System Prompt", 
-                                         label_visibility="collapsed",
-                                         value=st.session_state['system_prompt'])
-st.session_state['system_prompt'] = system_prompt
-
-
-# 2. 추가한 프롬프트 보여주기
+# 1. 추가한 프롬프트 보여주기
 for ind, prompt in enumerate(st.session_state['prompts']) : 
     cate, text = prompt
     prompt_container = prompt_setting.container(border=True)
     with prompt_container : 
         prompt_container.write(f'<p>{cate}</p>', unsafe_allow_html=True)
-        prompt_container.write(f'<span> {text} </span>', unsafe_allow_html=True)
+        prompt_container.text(text)
         
         # del_button, mod_button = prompt_container.columns([1, 1], gap="small")
         delete = prompt_container.button("❌ Delete", key=f'del{ind}', on_click=delete_chat, args=(ind, ))
         modify =prompt_container.button("✏️ Modify", key=f'mod{ind}', on_click=modify_chat, args=(ind, ))
 
-# 3. 카테고리 별 프롬프트 추가하기
-prompt_category, add_prompt, add_button = prompt_setting.columns([2, 5, 1])
-category = prompt_category.selectbox(label = "입력카테고리", 
-                                     options = ["human", "ai"], 
-                                     label_visibility = 'collapsed',
-                                     key= 'prompt_category')
-new_prompt = add_prompt.text_input(label = '추가프롬프트', 
+# 2. 카테고리 별 프롬프트 추가하기
+add_prompt, add_button = prompt_setting.columns([5, 1])
+new_prompt = add_prompt.text_area(label = '추가프롬프트', 
                                 placeholder="Prompt",
                                 label_visibility = 'collapsed',
                                 key='new_prompt',
                                 value=""
                                 )
+category = add_button.selectbox(label = "입력카테고리", 
+                                     options = ["system", "human", "ai"], 
+                                     label_visibility = 'collapsed',
+                                     key= 'prompt_category')
 add_button = add_button.button(label="Add", 
                                type="primary", 
                                key='add_button',
@@ -164,6 +152,7 @@ add_button = add_button.button(label="Add",
 
 if st.session_state.add : 
     st.session_state['prompts'].append((category, new_prompt))
+    print(st.session_state['prompts'])
     st.session_state.add = False # 한번만 add
     st.rerun()
 
@@ -269,10 +258,6 @@ if gen_button :
     # 중복제거
     # st.session_state['model_configs'] = list(set(st.session_state['model_configs']))
 
-    # system prompt 연결
-    # if system_prompt :
-    #     st.session_state['prompts'] = [('system', system_prompt)] + st.session_state['prompts']
-
     if not Error : 
         with config_setting : 
             with st.spinner('텍스트 생성 중...') : 
@@ -280,10 +265,11 @@ if gen_button :
                     # 비동기 루프 실행
                     results = asyncio.run(generate(st.session_state['model_configs'], 
                                                    generate_times=generate_times, 
-                                                   chatprompt=[('system', system_prompt)] + st.session_state['prompts']))
+                                                   chatprompt= st.session_state['prompts']))
                    
                     st.session_state['generation_results'] = results
                 except Exception as e : 
+                    print(e)
                     st.error(e)
 
 ################# 3. RESULT AREA #################
@@ -313,13 +299,3 @@ if st.session_state['generation_results'] :
             tap.write(f'''<p>{model_name}-temp{temperature}-topP{top_p}</p>''', unsafe_allow_html=True)
             for ind, result_generate in enumerate(result_group[conf_ind]) : 
                 tap.code(body=result_generate, language='plaintext')
-                # tap.text_area(label = 'result', 
-                #               value=result_generate,
-                #               label_visibility='collapsed',
-                #               key = f'{model_name}-{temperature}-{top_p}_{ind}'
-                #               )
-# 동일 모델에 대해서 재정렬하기
-# 결과 화면
-# 아무것도 없으면 아이콘
-
-# config 세팅화면

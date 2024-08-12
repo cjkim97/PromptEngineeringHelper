@@ -11,9 +11,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 import asyncio
 
-
-
-# OpenAI 출력
+# 출력
 async def get_result(model_config, chatprompt = []) : 
     
     # 모델 세팅
@@ -53,7 +51,6 @@ async def get_result(model_config, chatprompt = []) :
     
     # 프롬프트 세팅
     prompt = ChatPromptTemplate(chatprompt)
-
     # chain
     chain = prompt | llm | StrOutputParser()
 
@@ -76,7 +73,3 @@ async def generate(configs = [], generate_times=1, chatprompt=[]):
 
     results = await asyncio.gather(*tasks)
     return results
-
-# # 비동기 루프 실행
-# results = asyncio.run(generate())
-# print(results)
