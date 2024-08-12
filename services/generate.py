@@ -38,7 +38,8 @@ async def get_result(model_config, chatprompt = []) :
             model=model_name,
             api_key=api_key,
             max_retries = 5,
-            top_p = top_p
+            top_p = top_p,
+            max_tokens=4096
         )
     elif 'gemini' in model_name :
         print(">>>>>>> GOOGLE MODEL INFERNCING을 시작합니다")
