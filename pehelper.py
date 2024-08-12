@@ -18,6 +18,9 @@ if 'prompts' not in st.session_state:
 if 'model_configs' not in st.session_state:
     st.session_state['model_configs'] = []
 
+if 'system_prompt' not in st.session_state:
+    st.session_state['system_prompt'] = ''
+
 if 'generation_results' not in st.session_state:
     st.session_state['generation_results'] = []
 
@@ -123,7 +126,11 @@ prompt_setting, config_setting = st.columns([2, 1])
 ################# 1. PROMPT SETTING AREA #################
 prompt_setting.subheader("프롬프트 입력")
 # 1. System Prompt
-system_prompt = prompt_setting.text_area(label = '시스템프롬프트', placeholder="System Prompt", label_visibility="collapsed")
+system_prompt = prompt_setting.text_area(label = '시스템프롬프트', 
+                                         placeholder="System Prompt", 
+                                         label_visibility="collapsed",
+                                         value=st.session_state['system_prompt'])
+st.session_state['system_prompt'] = system_prompt
 
 
 # 2. 추가한 프롬프트 보여주기
