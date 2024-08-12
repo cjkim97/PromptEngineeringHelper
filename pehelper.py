@@ -154,6 +154,7 @@ if st.session_state.add :
     st.session_state['prompts'].append((category, new_prompt))
     print(st.session_state['prompts'])
     st.session_state.add = False # 한번만 add
+    st.session_state.new_prompt=''
     st.rerun()
 
 
