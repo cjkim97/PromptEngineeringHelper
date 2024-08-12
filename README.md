@@ -4,10 +4,10 @@ https://peh3lper.streamlit.app/ <br>
 "펠퍼"는 Streamlit 기반으로 만들어졌으며, 국내 1호 프롬프트 엔지니어인 강수진 대표님께 영감을 받아, 제가 평소에 쓰면서 필요했던 기능을 담아 만들었습니다. 
 
 # 사용설명서
-1. 프롬프트를 입력합니다. Systemprompt 와 human/ai prompt 를 세팅할 수 있습니다.
+1. 프롬프트를 입력합니다. system, human, ai 중에서 선택하여 프롬프트를 추가할 수 있습니다.
   ![프롬프트입력](https://github.com/user-attachments/assets/1b85362d-52c7-4af5-afc6-aa6311fe22b8)
 
-2. 생성할 모델을 설정합니다. 각 모델을 추가할 때마다 추가한 모델의 temperature와 top-p 값을 조절할 수 있습니다!
+2. 생성할 모델을 설정합니다. 각 모델을 추가할 때마다 추가한 모델의 temperature와 top-p 값을 조절할 수 있습니다. 현재 max_token 은 4096 으로 고정된 상태입니다.
   ![모델세팅_fast](https://github.com/user-attachments/assets/7f5b1003-0af8-49f7-8955-be07ddf82dc1)
 
 3. API key, 모델 호출 횟수를 입력한 뒤 생성버튼을 누릅니다. (각 모델이 생성 시도 수 만큼 호출되기 때문에 api 비용 조심하세요 :) )
@@ -28,4 +28,5 @@ https://peh3lper.streamlit.app/ <br>
 4. Generate 를 클릭합니다.
 
 # Update
-- 2024.08.09 "펠퍼v1.0.0" release 
+- 2024.08.09 "펠퍼v1.0.0" release
+- 2024.08.12 "펠퍼v1.0.1" release : UI, 모델 세팅값 수정
