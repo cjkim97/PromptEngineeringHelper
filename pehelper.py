@@ -270,8 +270,8 @@ if gen_button :
     # st.session_state['model_configs'] = list(set(st.session_state['model_configs']))
 
     # system prompt 연결
-    if system_prompt :
-        st.session_state['prompts'] = [('system', system_prompt)] + st.session_state['prompts']
+    # if system_prompt :
+    #     st.session_state['prompts'] = [('system', system_prompt)] + st.session_state['prompts']
 
     if not Error : 
         with config_setting : 
@@ -280,7 +280,7 @@ if gen_button :
                     # 비동기 루프 실행
                     results = asyncio.run(generate(st.session_state['model_configs'], 
                                                    generate_times=generate_times, 
-                                                   chatprompt=st.session_state['prompts']))
+                                                   chatprompt=[('system', system_prompt)] + st.session_state['prompts']))
                    
                     st.session_state['generation_results'] = results
                 except Exception as e : 
