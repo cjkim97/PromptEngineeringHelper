@@ -268,6 +268,7 @@ if gen_button :
                                                    chatprompt= st.session_state['prompts']))
                    
                     st.session_state['generation_results'] = results
+                    st.toast("결과가 나왔어요!", icon='🎉')
                 except Exception as e : 
                     print(e)
                     st.error(e)
@@ -298,4 +299,5 @@ if st.session_state['generation_results'] :
         with tap : 
             tap.write(f'''<p>{model_name}-temp{temperature}-topP{top_p}</p>''', unsafe_allow_html=True)
             for ind, result_generate in enumerate(result_group[conf_ind]) : 
-                tap.code(body=result_generate, language='plaintext')
+                # tap.code(body=result_generate, language='plaintext')
+                tap.code(body=result_generate, language='markdown')
