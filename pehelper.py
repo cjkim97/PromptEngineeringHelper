@@ -131,14 +131,15 @@ system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',p
 # 1. 추가한 프롬프트 보여주기
 for ind, prompt in enumerate(st.session_state['prompts']) : 
     cate, text = prompt
-    prompt_container = prompt_setting.container(border=True)
-    with prompt_container : 
-        prompt_container.write(f'<p>{cate}</p>', unsafe_allow_html=True)
-        prompt_container.text(text)
+    if cate!='system' : 
+        prompt_container = prompt_setting.container(border=True)
+        with prompt_container : 
+            prompt_container.write(f'<p>{cate}</p>', unsafe_allow_html=True)
+            prompt_container.text(text)
         
-        # del_button, mod_button = prompt_container.columns([1, 1], gap="small")
-        delete = prompt_container.button("❌ Delete", key=f'del{ind}', on_click=delete_chat, args=(ind, ))
-        modify =prompt_container.button("✏️ Modify", key=f'mod{ind}', on_click=modify_chat, args=(ind, ))
+            # del_button, mod_button = prompt_container.columns([1, 1], gap="small")
+            delete = prompt_container.button("❌ Delete", key=f'del{ind}', on_click=delete_chat, args=(ind, ))
+            modify =prompt_container.button("✏️ Modify", key=f'mod{ind}', on_click=modify_chat, args=(ind, ))
 
 # 2. 카테고리 별 프롬프트 추가하기
 # index 계산
@@ -166,6 +167,7 @@ add_button = add_button.button(label="Add",
 
 if st.session_state.add : 
     # new_prompt 에 {} 괄호 처리 수정
+    new_prompt = new_prompt.replace('{', '{{').replace('}', '}}')
     st.session_state['prompts'].append((category, new_prompt))
     st.session_state.add = False # 한번만 add
     # st.session_state.new_prompt=''
