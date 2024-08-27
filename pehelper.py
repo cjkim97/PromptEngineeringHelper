@@ -166,8 +166,6 @@ add_button = add_button.button(label="Add",
                                on_click=add_chat)
 
 if st.session_state.add : 
-    # new_prompt 에 {} 괄호 처리 수정
-    new_prompt = new_prompt.replace('{', '{{').replace('}', '}}')
     st.session_state['prompts'].append((category, new_prompt))
     st.session_state.add = False # 한번만 add
     # st.session_state.new_prompt=''

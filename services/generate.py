@@ -50,7 +50,12 @@ async def get_result(model_config, chatprompt = []) :
         )
     
     # 프롬프트 세팅
-    prompt = ChatPromptTemplate(chatprompt)
+    # prompt 에 {} 괄호 처리 수정
+    modified_prompt = []
+    for cate, prompt in chatprompt : 
+        prompt = prompt.replace('{', '{{').replace('}', '}}')
+        modified_prompt.append((cate, prompt))
+    prompt = ChatPromptTemplate(modified_prompt)
     # chain
     chain = prompt | llm | StrOutputParser()
 
