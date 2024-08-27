@@ -12,6 +12,10 @@ st.set_page_config(
 if 'prompts' not in st.session_state:
     st.session_state['prompts'] = []
 
+if 'system_prompt' not in st.session_state:
+    st.session_state['system_prompt'] = ''
+
+
 if 'model_configs' not in st.session_state:
     st.session_state['model_configs'] = []
 
@@ -121,6 +125,16 @@ prompt_setting, config_setting = st.columns([2, 1])
 
 ################# 1. PROMPT SETTING AREA #################
 prompt_setting.subheader("프롬프트 입력")
+# System 은 선택사항
+system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',
+                                         placeholder='ex. 너는 친절한 상담원이야.',
+                                        #  label_visibility='collapsed',
+                                         value=''
+                                         )
+if system_prompt : 
+    if st.session_state['system_prompt'] != system_prompt : 
+        st.session_state['system_prompt'] = system_prompt
+
 # 1. 추가한 프롬프트 보여주기
 for ind, prompt in enumerate(st.session_state['prompts']) : 
     cate, text = prompt
@@ -134,17 +148,24 @@ for ind, prompt in enumerate(st.session_state['prompts']) :
         modify =prompt_container.button("✏️ Modify", key=f'mod{ind}', on_click=modify_chat, args=(ind, ))
 
 # 2. 카테고리 별 프롬프트 추가하기
+# index 계산
+set_index = 0
+if len(st.session_state['prompts']) : 
+    last_cate = st.session_state['prompts'][-1][0]
+    if last_cate == 'human' : 
+        set_index = 1
 add_prompt, add_button = prompt_setting.columns([5, 1])
-new_prompt = add_prompt.text_area(label = '추가프롬프트', 
-                                placeholder="Prompt",
-                                label_visibility = 'collapsed',
+new_prompt = add_prompt.text_area(label = '프롬프트(필수)', 
+                                placeholder="ex. 아래 #내용을 차근 차근 읽고 친절한 말투로 설명해줘. \n\n#내용\n...",
+                                # label_visibility = 'collapsed',
                                 key='new_prompt',
                                 value=""
                                 )
-category = add_button.selectbox(label = "입력카테고리", 
-                                     options = ["system", "human", "ai"], 
-                                     label_visibility = 'collapsed',
-                                     key= 'prompt_category')
+category = add_button.selectbox(label = "카테고리 선택 및 추가", 
+                                options = ["human", "ai"], 
+                                # label_visibility = 'collapsed',
+                                key= 'prompt_category',
+                                index=set_index)
 add_button = add_button.button(label="Add", 
                                type="primary", 
                                key='add_button',
@@ -152,7 +173,6 @@ add_button = add_button.button(label="Add",
 
 if st.session_state.add : 
     st.session_state['prompts'].append((category, new_prompt))
-    print(st.session_state['prompts'])
     st.session_state.add = False # 한번만 add
     # st.session_state.new_prompt=''
     st.rerun()
@@ -263,6 +283,12 @@ if gen_button :
         with config_setting : 
             with st.spinner('텍스트 생성 중...') : 
                 try : 
+                    # system 프롬프트 추가
+                    if st.session_state['prompts'][0][0] != 'system' : 
+                        st.session_state['prompts'] = [('system', st.session_state['system_prompt'])] + st.session_state['prompts']
+                    else : 
+                        st.session_state['prompts'] = [('system', st.session_state['system_prompt'])] + st.session_state['prompts'][1:]
+                    print(st.session_state['prompts'])
                     # 비동기 루프 실행
                     results = asyncio.run(generate(st.session_state['model_configs'], 
                                                    generate_times=generate_times, 

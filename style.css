@@ -15,9 +15,13 @@
 }
 
 /* 폰트 변경 */
+textarea {
+    font-family: 'Pretendard Variable' !important;
+    font-weight: 400 !important;
+}
 span, div {
-    font-family: 'Pretendard Variable';
-    font-weight: 400;
+    font-family: 'Pretendard Variable' !important;
+    font-weight: 400 !important;
 }
 
 p {
