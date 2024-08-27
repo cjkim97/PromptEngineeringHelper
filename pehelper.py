@@ -181,6 +181,7 @@ if st.session_state.add :
 ################# 2. CONFIG SETTING AREA #################
 config_setting.subheader('모델 세팅')
 # 1. 모델 추가 selectbox
+config_setting.write('모델추가')
 models = ['선택', 'gpt-4o', 'gpt-4o-mini','gpt-3.5-turbo', 
           'claude-3-5-sonnet-20240620', 'claude-3-opus-20240229', 'claude-3-haiku-20240307',
           'gemini-1.5-flash', 'gemini-1.5-pro']
@@ -188,13 +189,14 @@ select, button = config_setting.columns([2, 1])
 add_model = select.selectbox(label='모델추가', 
                              options=models,
                              key='add_model',
-                            #  label_visibility="collapsed"
+                             label_visibility="collapsed"
 )
 add_button = button.button("Add", type="primary")
 if add_button : 
     add_model_config()
 
 # 2. 추가한 모델 config 설정
+config_setting.write('temperature/top p 조절')
 for ind, config in enumerate(st.session_state['model_configs']) : 
     model_name = config['model_name']
     config_expander = config_setting.expander(label=model_name, expanded=False)
