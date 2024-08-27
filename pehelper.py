@@ -196,7 +196,8 @@ if add_button :
     add_model_config()
 
 # 2. 추가한 모델 config 설정
-config_setting.write('temperature/top p 조절')
+if st.session_state['model_configs'] : 
+    config_setting.write('temperature/top p 조절')
 for ind, config in enumerate(st.session_state['model_configs']) : 
     model_name = config['model_name']
     config_expander = config_setting.expander(label=model_name, expanded=False)
