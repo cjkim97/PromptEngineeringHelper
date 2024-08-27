@@ -249,8 +249,17 @@ with key_input :
                                               type="password",
                                               value=st.session_state['api_keys']['GEMINI_API_KEY'])
         st.session_state['api_keys']['GEMINI_API_KEY'] = gemini_api_key
-    generate_times = key_input.number_input(label="생성 시도 수", min_value=1, max_value=10, value=1, step=1, key="generate_times")
-    gen_button = key_input.button("GENERATE", type='primary')
+    key_input.write('생성 횟수(API 비용 주의)')
+    number, button = key_input.columns(2)
+    generate_times = number.number_input(label="생성 시도 수", 
+                                         min_value=1, 
+                                         max_value=50, 
+                                         value=1, 
+                                         step=1,
+                                         key="generate_times",
+                                         label_visibility='collapsed'
+                                        )
+    gen_button = button.button("GENERATE", type='primary')
 
 Error = ""
 results = ""
