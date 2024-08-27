@@ -45,7 +45,7 @@ with open( "style.css", encoding='utf-8-sig' ) as css:
 ####################################### 페이지 상호작용 함수 영역 #######################################
 # 시스템 프롬프트 변경
 def modify_system_prompt() : 
-    st.session_state['system_prompt'] = st.session_state['sys_prom']
+    st.session_state['system_prompt'] = st.session_state['sys_prompt']
 
 # 프롬프트 삭제
 def delete_chat(chat_index):
@@ -126,14 +126,7 @@ prompt_setting, config_setting = st.columns([2, 1])
 ################# 1. PROMPT SETTING AREA #################
 prompt_setting.subheader("프롬프트 입력")
 # System 은 선택사항
-system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',
-                                         placeholder='ex. 너는 친절한 상담원이야.',
-                                        #  label_visibility='collapsed',
-                                         value=''
-                                         )
-if system_prompt : 
-    if st.session_state['system_prompt'] != system_prompt : 
-        st.session_state['system_prompt'] = system_prompt
+system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',placeholder='ex. 너는 친절한 상담원이야.',key='sys_prompt', on_change=modify_system_prompt)
 
 # 1. 추가한 프롬프트 보여주기
 for ind, prompt in enumerate(st.session_state['prompts']) : 
@@ -172,6 +165,7 @@ add_button = add_button.button(label="Add",
                                on_click=add_chat)
 
 if st.session_state.add : 
+    # new_prompt 에 {} 괄호 처리 수정
     st.session_state['prompts'].append((category, new_prompt))
     st.session_state.add = False # 한번만 add
     # st.session_state.new_prompt=''
