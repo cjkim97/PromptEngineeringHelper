@@ -188,7 +188,7 @@ select, button = config_setting.columns([2, 1])
 add_model = select.selectbox(label='모델추가', 
                              options=models,
                              key='add_model',
-                             label_visibility="collapsed"
+                            #  label_visibility="collapsed"
 )
 add_button = button.button("Add", type="primary")
 if add_button : 
