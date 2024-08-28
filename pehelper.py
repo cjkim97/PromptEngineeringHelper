@@ -126,7 +126,7 @@ prompt_setting, config_setting = st.columns([2, 1])
 ################# 1. PROMPT SETTING AREA #################
 prompt_setting.subheader("프롬프트 입력")
 # System 은 선택사항
-system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',placeholder='ex. 너는 친절한 상담원이야.',key='sys_prompt', on_change=modify_system_prompt)
+system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',placeholder='ex. 너는 친절한 상담원이야.',key='sys_prompt', on_change=modify_system_prompt, value=st.session_state['system_prompt'])
 
 # 1. 추가한 프롬프트 보여주기
 for ind, prompt in enumerate(st.session_state['prompts']) : 
