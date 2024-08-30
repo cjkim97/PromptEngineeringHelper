@@ -15,6 +15,8 @@ if 'prompts' not in st.session_state:
 if 'system_prompt' not in st.session_state:
     st.session_state['system_prompt'] = ''
 
+if 'temp_prompt' not in st.session_state:
+    st.session_state['temp_prompt'] = ''
 
 if 'model_configs' not in st.session_state:
     st.session_state['model_configs'] = []
@@ -55,19 +57,21 @@ def delete_chat(chat_index):
 # 프롬프트 추가
 def add_chat() : 
     if st.session_state.new_prompt : 
-            st.session_state.add = True
+            st.session_state['prompts'].append((st.session_state.prompt_category, st.session_state.new_prompt))
+            st.session_state.new_prompt = ''
+            # st.session_state.add = True
 
 @st.dialog("프롬프트 수정")
 def modify_chat(chat_index) : 
     now_prompt = st.session_state['prompts'][chat_index][-1]
     now_cate = st.session_state['prompts'][chat_index][0]
-    categories = ["system", "human", "ai"]
+    categories = ["human", "ai"]
     now_cate_index = categories.index(now_cate)
 
     # 프롬프트 수정
     cate_area, _ = st.columns([1, 2])
     modified_cate = cate_area.selectbox(label = "입력카테고리", 
-                                 options = ["system", "human", "ai"], 
+                                 options = ["human", "ai"], 
                                  label_visibility = 'collapsed',
                                  key= 'modified_category',
                                  index = now_cate_index)
@@ -126,7 +130,11 @@ prompt_setting, config_setting = st.columns([2, 1])
 ################# 1. PROMPT SETTING AREA #################
 prompt_setting.subheader("프롬프트 입력")
 # System 은 선택사항
-system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',placeholder='ex. 너는 친절한 상담원이야.',key='sys_prompt', on_change=modify_system_prompt, value=st.session_state['system_prompt'])
+system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',
+                                         placeholder='ex. 너는 친절한 상담원이야.',
+                                         key='sys_prompt', 
+                                         on_change=modify_system_prompt, 
+                                         value=st.session_state['system_prompt'])
 
 # 1. 추가한 프롬프트 보여주기
 for ind, prompt in enumerate(st.session_state['prompts']) : 
@@ -153,7 +161,7 @@ new_prompt = add_prompt.text_area(label = '프롬프트(필수)',
                                 placeholder="ex. 아래 #내용을 차근 차근 읽고 친절한 말투로 설명해줘. \n\n#내용\n...",
                                 # label_visibility = 'collapsed',
                                 key='new_prompt',
-                                value=""
+                                value=st.session_state['temp_prompt'],
                                 )
 category = add_button.selectbox(label = "카테고리 선택 및 추가", 
                                 options = ["human", "ai"], 
@@ -164,12 +172,6 @@ add_button = add_button.button(label="Add",
                                type="primary", 
                                key='add_button',
                                on_click=add_chat)
-
-if st.session_state.add : 
-    st.session_state['prompts'].append((category, new_prompt))
-    st.session_state.add = False # 한번만 add
-    # st.session_state.new_prompt=''
-    st.rerun()
 
 
 ################# 2. CONFIG SETTING AREA #################
@@ -294,7 +296,7 @@ if gen_button :
                         st.session_state['prompts'] = [('system', st.session_state['system_prompt'])] + st.session_state['prompts']
                     else : 
                         st.session_state['prompts'] = [('system', st.session_state['system_prompt'])] + st.session_state['prompts'][1:]
-                    print(st.session_state['prompts'])
+                    print(f'>>>>>>> 생성을 시작합니다.\n{st.session_state["prompts"]}')
                     # 비동기 루프 실행
                     results = asyncio.run(generate(st.session_state['model_configs'], 
                                                    generate_times=generate_times, 
