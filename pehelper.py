@@ -71,7 +71,6 @@ def modify_chat(chat_index) :
     now_prompt = st.session_state['prompts'][chat_index][-1]
     now_cate = st.session_state['prompts'][chat_index][0]
     print(f'프롬프트 유형 : {now_cate}')
-    print(f'프롬프트 원문 : {now_prompt}')
     categories = ["human", "ai"]
     now_cate_index = categories.index(now_cate)
 
