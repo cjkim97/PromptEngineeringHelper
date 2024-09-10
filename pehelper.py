@@ -15,6 +15,10 @@ if 'prompts' not in st.session_state:
 if 'system_prompt' not in st.session_state:
     st.session_state['system_prompt'] = ''
 
+if 'chat_prompt' not in st.session_state:
+    st.session_state['chat_prompt'] = []
+
+
 if 'temp_prompt' not in st.session_state:
     st.session_state['temp_prompt'] = ''
 
@@ -63,8 +67,11 @@ def add_chat() :
 
 @st.dialog("프롬프트 수정")
 def modify_chat(chat_index) : 
+    print(f'>>>>>>> {chat_index}번째 프롬프트를 수정합니다.')
     now_prompt = st.session_state['prompts'][chat_index][-1]
     now_cate = st.session_state['prompts'][chat_index][0]
+    print(f'프롬프트 유형 : {now_cate}')
+    print(f'프롬프트 원문 : {now_prompt}')
     categories = ["human", "ai"]
     now_cate_index = categories.index(now_cate)
 
@@ -139,15 +146,14 @@ system_prompt = prompt_setting.text_area(label='시스템프롬프트(선택)',
 # 1. 추가한 프롬프트 보여주기
 for ind, prompt in enumerate(st.session_state['prompts']) : 
     cate, text = prompt
-    if cate!='system' : 
-        prompt_container = prompt_setting.container(border=True)
-        with prompt_container : 
-            prompt_container.write(f'<p>{cate}</p>', unsafe_allow_html=True)
-            prompt_container.text(text)
-        
-            # del_button, mod_button = prompt_container.columns([1, 1], gap="small")
-            delete = prompt_container.button("❌ Delete", key=f'del{ind}', on_click=delete_chat, args=(ind, ))
-            modify =prompt_container.button("✏️ Modify", key=f'mod{ind}', on_click=modify_chat, args=(ind, ))
+    prompt_container = prompt_setting.container(border=True)
+    with prompt_container : 
+        prompt_container.write(f'<p>{cate}</p>', unsafe_allow_html=True)
+        prompt_container.text(text)
+    
+        # del_button, mod_button = prompt_container.columns([1, 1], gap="small")
+        delete = prompt_container.button("❌ Delete", key=f'del{ind}', on_click=delete_chat, args=(ind, ))
+        modify = prompt_container.button("✏️ Modify", key=f'mod{ind}', on_click=modify_chat, args=(ind, ))
 
 # 2. 카테고리 별 프롬프트 추가하기
 # index 계산
@@ -291,16 +297,12 @@ if gen_button :
         with config_setting : 
             with st.spinner('텍스트 생성 중...') : 
                 try : 
-                    # system 프롬프트 추가
-                    if st.session_state['prompts'][0][0] != 'system' : 
-                        st.session_state['prompts'] = [('system', st.session_state['system_prompt'])] + st.session_state['prompts']
-                    else : 
-                        st.session_state['prompts'] = [('system', st.session_state['system_prompt'])] + st.session_state['prompts'][1:]
-                    print(f'>>>>>>> 생성을 시작합니다.\n{st.session_state["prompts"]}')
+                    st.session_state['chat_prompt'] = [('system', st.session_state['system_prompt'])] + st.session_state['prompts']
+                    print(f'>>>>>>> 생성을 시작합니다.\n{st.session_state['chat_prompt']}')
                     # 비동기 루프 실행
                     results = asyncio.run(generate(st.session_state['model_configs'], 
                                                    generate_times=generate_times, 
-                                                   chatprompt= st.session_state['prompts']))
+                                                   chatprompt= st.session_state['chat_prompt']))
                    
                     st.session_state['generation_results'] = results
                     st.toast("결과가 나왔어요!", icon='🎉')
